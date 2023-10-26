@@ -75,19 +75,13 @@ class SmsProviderGateway(models.Model):
                     }
                 headers = self.get_request_headers()
                 
-                partner_id = self.get_partner_id(obj_data['mobile'])
                 response = self.send_sms_request(url, headers, payload)
-                self.smsHistory(response, partner_id, obj_data) if messageId else None
-
         def get_request_headers(self):
             return {
                 'X-Authorization': self.api_key,
                 'email': self.email,
                 'Content-Type': 'application/json',
             }
-
-        def get_partner_id(self,data=None):
-            return self.env['res.partner'].sudo().search(['|', ('mobile', '=',data), ('phone', '=',data)])
 
         def send_sms_request(self, url, headers, payload):
             try:
@@ -98,60 +92,98 @@ class SmsProviderGateway(models.Model):
                 print(f"Error sending SMS request: {str(e)}")
                 return None
 
-        def smsHistory(self, response, partner_id, obj_data):
-            _logger.error(response)
-            if response and response.status_code == 200:
-                parsed_data = response.json()
-                _logger.error(partner_id)
-                _logger.error(parsed_data)
-                if parsed_data.get('status', {}).get('type') == "success":
-                    obj = {
-                        "state": "sent",
-                        "number": None,
-                        "partner_id": partner_id.id if partner_id else None,
-                        "body": obj_data['message'],
-                    }
-                    sms_history = self.env['sms.sms'].sudo().create(obj)
-            return True
-
         def activateProvider(self):
             for rec in self:
                 if rec.active:
                     rec.write({"active":False})
                 else:
                     rec.write({"active":True})
-class SendSMS(models.TransientModel):
-    _inherit = 'sms.composer'
-    _description = 'Send SMS Wizard'
 
-    def action_send_sms(self):
-        partner_ids = self.env.context.get('active_ids', [])
-        records = self.env['res.partner'].search([('id','in',partner_ids)])
-        provider=self.env['sms.provider.gateway'].search([('active','=',True)])
-        letters = string.ascii_letters
-        random_string = ''.join(random.choice(letters) for _ in range(20))
-        if provider:
-            if partner_ids:
-                for rec in records:
-                    obj_data = {
-                            "mobile": rec.mobile or rec.phone,
-                            "message": self.body,
-                            "messageuuid": random_string
-                        }
-                    provider.sendSmsNotification(obj_data)
-            else:
-                obj_data = {
-                "mobile": self.recipient_single_number_itf,
-                "message": self.body,
-                "messageuuid": random_string
-                }
-                provider.sendSmsNotification(obj_data)
-            return True
-        else:
-            if self.composition_mode in ('numbers', 'comment'):
-                if self.comment_single_recipient and not self.recipient_single_valid:
-                    raise UserError(_('Invalid recipient number. Please update it.'))
-                elif not self.comment_single_recipient and self.recipient_invalid_count:
-                    raise UserError(_('%s invalid recipients', self.recipient_invalid_count))
-            self._action_send_sms()
-            return False
+        # def smsHistory(self, response, partner_id, obj_data):
+        #     _logger.error(response)
+        #     if response and response.status_code == 200:
+        #         parsed_data = response.json()
+        #         _logger.error(partner_id)
+        #         _logger.error(parsed_data)
+        #         if parsed_data.get('status', {}).get('type') == "success":
+        #             obj = {
+        #                 "state": "sent",
+        #                 "number": None,
+        #                 "partner_id": partner_id.id if partner_id else None,
+        #                 "body": obj_data['message'],
+        #             }
+        #             sms_history = self.env['sms.sms'].sudo().create(obj)
+        #     return True
+
+
+class Mailing(models.Model):
+    _inherit = 'mailing.mailing'
+
+
+    def sction_send_sms_now(self):
+        _logger.error(self.contact_list_ids)
+        _logger.error("THE IDS WE ARE GETTING FROM")
+        pass
+
+    def action_put_in_queue(self):
+        _logger.error(self.contact_list_ids)
+        _logger.error("TESTING THE S,S TO BE SENT FROM HERE.............")
+        # self.write({'state': 'in_queue'})
+        # cron = self.env.ref('mass_mailing.ir_cron_mass_mailing_queue')
+        # cron._trigger(
+        #     schedule_date or fields.Datetime.now()
+        #     for schedule_date in self.mapped('schedule_date')
+        # )
+    def action_schedule(self):
+        self.ensure_one()
+        if self.schedule_date and self.schedule_date > fields.Datetime.now():
+            return self.action_put_in_queue()
+        action = self.env["ir.actions.actions"]._for_xml_id("mass_mailing.mailing_mailing_schedule_date_action")
+        action['context'] = dict(self.env.context, default_mass_mailing_id=self.id, dialog_size='medium')
+        return action
+    def action_launch(self):
+        self.write({'schedule_type': 'now'})
+        return self.action_put_in_queue()
+    def action_retry_failed(self):
+        failed_mails = self.env['mail.mail'].sudo().search([
+            ('mailing_id', 'in', self.ids),
+            ('state', '=', 'exception')
+        ])
+        failed_mails.mapped('mailing_trace_ids').unlink()
+        failed_mails.unlink()
+        self.action_put_in_queue()
+# class SendSMS(models.TransientModel):
+#     _inherit = 'sms.composer'
+#     _description = 'Send SMS Wizard'
+
+#     def action_send_sms(self):
+#         partner_ids = self.env.context.get('active_ids', [])
+#         records = self.env['res.partner'].search([('id','in',partner_ids)])
+#         provider=self.env['sms.provider.gateway'].search([('active','=',True)])
+#         letters = string.ascii_letters
+#         random_string = ''.join(random.choice(letters) for _ in range(20))
+#         if provider:
+#             if partner_ids:
+#                 for rec in records:
+#                     obj_data = {
+#                             "mobile": rec.mobile or rec.phone,
+#                             "message": self.body,
+#                             "messageuuid": random_string
+#                         }
+#                     provider.sendSmsNotification(obj_data)
+#             else:
+#                 obj_data = {
+#                 "mobile": self.recipient_single_number_itf,
+#                 "message": self.body,
+#                 "messageuuid": random_string
+#                 }
+#                 provider.sendSmsNotification(obj_data)
+#             return True
+#         else:
+#             if self.composition_mode in ('numbers', 'comment'):
+#                 if self.comment_single_recipient and not self.recipient_single_valid:
+#                     raise UserError(_('Invalid recipient number. Please update it.'))
+#                 elif not self.comment_single_recipient and self.recipient_invalid_count:
+#                     raise UserError(_('%s invalid recipients', self.recipient_invalid_count))
+#             self._action_send_sms()
+#             return False
