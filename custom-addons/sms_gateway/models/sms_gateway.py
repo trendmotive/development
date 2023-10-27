@@ -1,11 +1,7 @@
 import requests
-import random
-import string
-import threading
+# import threading
 import logging
-from dateutil.relativedelta import relativedelta
-from werkzeug.urls import url_encode
-from odoo import fields, models, api
+from odoo import fields, models, api,_
 from odoo.exceptions import ValidationError, UserError
 import random
 import string
@@ -51,10 +47,10 @@ class SmsProviderGateway(models.Model):
                         "data": [
                             {
                                 "message_bag": {
-                                    "numbers": obj_data['mobile'],
+                                    "numbers": obj_data['numbers'],
                                     "message": obj_data['message'],
                                     "sender": self.env.company.name,
-                                    "source_id": obj_data['messageuuid'],
+                                    "source_id": obj_data['source_id'],
                                 }
                             }
                         ]
@@ -76,6 +72,7 @@ class SmsProviderGateway(models.Model):
                 headers = self.get_request_headers()
                 
                 response = self.send_sms_request(url, headers, payload)
+                _logger.error(response.text)
         def get_request_headers(self):
             return {
                 'X-Authorization': self.api_key,
@@ -121,69 +118,31 @@ class Mailing(models.Model):
 
 
     def sction_send_sms_now(self):
-        _logger.error(self.contact_list_ids)
-        _logger.error("THE IDS WE ARE GETTING FROM")
-        pass
-
-    def action_put_in_queue(self):
-        _logger.error(self.contact_list_ids)
-        _logger.error("TESTING THE S,S TO BE SENT FROM HERE.............")
-        # self.write({'state': 'in_queue'})
-        # cron = self.env.ref('mass_mailing.ir_cron_mass_mailing_queue')
-        # cron._trigger(
-        #     schedule_date or fields.Datetime.now()
-        #     for schedule_date in self.mapped('schedule_date')
-        # )
-    def action_schedule(self):
-        self.ensure_one()
-        if self.schedule_date and self.schedule_date > fields.Datetime.now():
-            return self.action_put_in_queue()
-        action = self.env["ir.actions.actions"]._for_xml_id("mass_mailing.mailing_mailing_schedule_date_action")
-        action['context'] = dict(self.env.context, default_mass_mailing_id=self.id, dialog_size='medium')
-        return action
-    def action_launch(self):
-        self.write({'schedule_type': 'now'})
-        return self.action_put_in_queue()
-    def action_retry_failed(self):
-        failed_mails = self.env['mail.mail'].sudo().search([
-            ('mailing_id', 'in', self.ids),
-            ('state', '=', 'exception')
-        ])
-        failed_mails.mapped('mailing_trace_ids').unlink()
-        failed_mails.unlink()
-        self.action_put_in_queue()
-# class SendSMS(models.TransientModel):
-#     _inherit = 'sms.composer'
-#     _description = 'Send SMS Wizard'
-
-#     def action_send_sms(self):
-#         partner_ids = self.env.context.get('active_ids', [])
-#         records = self.env['res.partner'].search([('id','in',partner_ids)])
-#         provider=self.env['sms.provider.gateway'].search([('active','=',True)])
-#         letters = string.ascii_letters
-#         random_string = ''.join(random.choice(letters) for _ in range(20))
-#         if provider:
-#             if partner_ids:
-#                 for rec in records:
-#                     obj_data = {
-#                             "mobile": rec.mobile or rec.phone,
-#                             "message": self.body,
-#                             "messageuuid": random_string
-#                         }
-#                     provider.sendSmsNotification(obj_data)
-#             else:
-#                 obj_data = {
-#                 "mobile": self.recipient_single_number_itf,
-#                 "message": self.body,
-#                 "messageuuid": random_string
-#                 }
-#                 provider.sendSmsNotification(obj_data)
-#             return True
-#         else:
-#             if self.composition_mode in ('numbers', 'comment'):
-#                 if self.comment_single_recipient and not self.recipient_single_valid:
-#                     raise UserError(_('Invalid recipient number. Please update it.'))
-#                 elif not self.comment_single_recipient and self.recipient_invalid_count:
-#                     raise UserError(_('%s invalid recipients', self.recipient_invalid_count))
-#             self._action_send_sms()
-#             return False
+        letters = string.ascii_letters
+        random_string = ''.join(random.choice(letters) for _ in range(10))
+        sms_provider=self.env['sms.provider.gateway'].sudo().search([("active","=",True)],limit=1)
+        for rec in self.contact_list_ids.contact_ids:
+            _logger.error(rec.mobile)
+            obj_data={
+                "numbers": rec.mobile,
+                "message": self.body_plaintext,
+                "sender": None,
+                "source_id": random_string,
+            }
+            if sms_provider:
+                sms_provider.sendSmsNotification(obj_data)
+                mail_trace=self.env["mailing.trace"].sudo().create({
+                    "mass_mailing_id":self.id,
+                    "sms_number":rec.mobile,
+                    "medium_id":self.medium_id.id,
+                    "source_id": self.source_id.id,
+                    "trace_status":"sent",
+                    "model":rec.id,
+                    "res_id":self.id,
+                    "trace_type":"sms"
+                })
+                self.write({"state":"sending"})
+            else:
+                raise ValidationError("You Have not set an sms provider")
+        self.write({"state":"done"})
+        return True
