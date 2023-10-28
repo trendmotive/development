@@ -126,7 +126,6 @@ class Mailing(models.Model):
             obj_data={
                 "numbers": rec.mobile,
                 "message": self.body_plaintext,
-                "sender": None,
                 "source_id": random_string,
             }
             if sms_provider:
@@ -146,3 +145,39 @@ class Mailing(models.Model):
                 raise ValidationError("You Have not set an sms provider")
         self.write({"state":"done"})
         return True
+
+class SendSMS(models.TransientModel):
+    _inherit = 'sms.composer'
+    _description = 'Send SMS Wizard'
+
+    def action_send_sms(self):
+        partner_ids = self.env.context.get('active_ids', [])
+        records = self.env['res.partner'].search([('id','in',partner_ids)])
+        provider=self.env['sms.provider.gateway'].search([('active','=',True)])
+        letters = string.ascii_letters
+        random_string = ''.join(random.choice(letters) for _ in range(20))
+        if provider:
+            if partner_ids:
+                for rec in records:
+                    obj_data = {
+                            "numbers": rec.mobile or rec.phone,
+                            "message": self.body,
+                            "source_id": random_string
+                        }
+                    provider.sendSmsNotification(obj_data)
+            else:
+                obj_data = {
+                "numbers": self.recipient_single_number_itf,
+                "message": self.body,
+                "source_id": random_string
+                }
+                provider.sendSmsNotification(obj_data)
+            return True
+        else:
+            if self.composition_mode in ('numbers', 'comment'):
+                if self.comment_single_recipient and not self.recipient_single_valid:
+                    raise UserError(_('Invalid recipient number. Please update it.'))
+                elif not self.comment_single_recipient and self.recipient_invalid_count:
+                    raise UserError(_('%s invalid recipients', self.recipient_invalid_count))
+            self._action_send_sms()
+            return False
