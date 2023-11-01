@@ -51,10 +51,12 @@ class SmsProviderGateway(models.Model):
         payload = {}
         if self.provider == 'ujumbesms':
             if obj_data:
+                partner_id= self.env['res.partner'].search(['|',("mobile", "=", obj_data['numbers']), ("phone", "=", obj_data['numbers'])])
                 messageToBeSent = self.env['sms.sms'].create({
                     "mailing":obj_data["custom_id"] if obj_data["custom_id"] else None,
                     "number": obj_data['numbers'],
-                    "partner_id": self.env['res.partner'].search([("mobile", "=", obj_data['numbers']), ("phone", "=", obj_data['numbers'])]).id if self.env['res.partner'].search([("mobile", "=", obj_data['numbers']), ("phone", "=", obj_data['numbers'])]) else None, "body": obj_data['message']})
+                    "partner_id": partner_id.id
+                })
                 payload = {
                     "data": [
                         {
@@ -85,7 +87,6 @@ class SmsProviderGateway(models.Model):
             headers = self.get_request_headers()
 
             response = self.send_sms_request(url, headers, payload)
-            _logger.error(response.text)
 
     def get_request_headers(self):
         return {
@@ -186,7 +187,7 @@ class SendSMS(models.TransientModel):
 
 class SmsSms(models.Model):
     _inherit = "sms.sms"
-    contact_status = fields.Selection(NUMBERSTATUS, default='NUMBER_OK', required=True)
+    contact_status = fields.Selection(NUMBERSTATUS, default='NUMBER_OK', readonly=True)
     mailing=fields.Many2one("mailing.mailing",string="mailing")
     def send(self, unlink_failed=False, unlink_sent=True, auto_commit=False, raise_exception=False):
         """ Main API method to send SMS.

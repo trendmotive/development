@@ -61,4 +61,14 @@
             action = records.action_update_invoice_date()
         </field>
  </record>
+    <record id="sms_sms_inherit_updated" model="ir.ui.view">
+        <field name="name">sms.sms.view.form</field>
+        <field name="model">sms.sms</field>
+        <field name="inherit_id" ref="sms.sms_sms_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='failure_type']" position="after">
+                <field name="contact_status" />
+              </xpath>
+        </field>
+    </record>
 </odoo>
