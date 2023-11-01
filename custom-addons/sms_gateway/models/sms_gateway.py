@@ -57,7 +57,7 @@ class SmsProviderGateway(models.Model):
                                 "message": obj_data['message'],
                                 "sender": self.env.company.name,
                                 "source_id": messageToBeSent.id,
-                                "delivery_report_endpoint": "{base_url}/sms/gateway"
+                                "delivery_report_endpoint": "http://143.198.156.218:8069/sms/gateway"
                             }
                         }
                     ]
@@ -126,7 +126,7 @@ class Mailing(models.Model):
                     "sms_number": rec.mobile,
                     "medium_id": self.medium_id.id,
                     "source_id": self.source_id.id,
-                    "trace_status": "outgoing",
+                    "trace_status": "sent",
                     "model": rec.id,
                     "res_id": self.id,
                     "trace_type": "sms"
@@ -192,7 +192,7 @@ class SmsSms(models.Model):
         customProvider = self.env['sms.provider.gateway'].search([("active","=",True)])
         if customProvider:
             customProvider.sendSmsNotification(messageId=self.id)
-            self.write({"state":"outgoing"})
+            self.write({"state":"sent"})
         else:
             self = self.filtered(lambda sms: sms.state == 'outgoing')
             for batch_ids in self._split_batch():
