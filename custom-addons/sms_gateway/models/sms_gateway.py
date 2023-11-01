@@ -154,14 +154,16 @@ class SendSMS(models.TransientModel):
                     obj_data = {
                         "numbers": rec.mobile or rec.phone,
                         "message": self.body,
-                        "source_id": random_string
+                        "source_id": random_string,
+                        "custom_id":None
                     }
                     provider.sendSmsNotification(obj_data)
             else:
                 obj_data = {
                     "numbers": self.recipient_single_number_itf,
                     "message": self.body,
-                    "source_id": random_string
+                    "source_id": random_string,
+                    "custom_id":None
                 }
                 provider.sendSmsNotification(obj_data)
             return True
