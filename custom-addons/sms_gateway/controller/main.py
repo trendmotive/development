@@ -17,13 +17,13 @@ class SmsResponse(http.Controller):
         if data:
             existingSms = request.env["sms.sms"].sudo().search([("id", "=", data['source_id'])])
             if data['delivery_report'] == "DeliveredToTerminal" and existingSms:
-                existingSms.write({"state": "sent"})
+                existingSms.write({"state": "sent","contact_status":"NUMBER_OK"})
             if data['delivery_report'] == "SenderName Blacklisted":
-                existingSms.write({"state": "error"})
+                existingSms.write({"state": "error","contact_status":"BLACKLISTED"})
             if data['delivery_report'] == "SENT":
-                existingSms.write({"state": "outgoing"})
+                existingSms.write({"state": "outgoing","contact_status":"NUMBER_OK"})
             if data['delivery_report'] == "DeliveryImpossible":
-                existingSms.write({"state": "error"})
+                existingSms.write({"state": "error","contact_status":"ABSENT"})
             if existingSms.mailing:
                 existingTrace = request.env["mailing.trace"].sudo().search([("mass_mailing_id", "=", existingSms.mailing.id)])
                 if existingTrace:

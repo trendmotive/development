@@ -7,6 +7,12 @@ import random
 import string
 
 _logger = logging.getLogger(__name__)
+NUMBERSTATUS = [
+    ('BLACKLISTED', "Blacklisted User"),
+    ('UNSUBSCRIBED', "Unsubscribed User"),
+    ('ABSENT', "AbsentSubscriber/Delivery Imposible"),
+    ('NUMBER_OK', "Mobile Ok")
+]
 PROVIDERS = [
     ('ujumbesms', "UjumbeSMS"),
     ('africastalking', "Africa's Talking")
@@ -180,7 +186,7 @@ class SendSMS(models.TransientModel):
 
 class SmsSms(models.Model):
     _inherit = "sms.sms"
-
+    contact_status = fields.Selection(NUMBERSTATUS, default='NUMBER_OK', required=True)
     mailing=fields.Many2one("mailing.mailing",string="mailing")
     def send(self, unlink_failed=False, unlink_sent=True, auto_commit=False, raise_exception=False):
         """ Main API method to send SMS.
