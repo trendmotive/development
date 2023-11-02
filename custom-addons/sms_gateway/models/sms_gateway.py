@@ -48,6 +48,8 @@ class SmsProviderGateway(models.Model):
 
     def sendSmsNotification(self, obj_data=None, messageId=None):
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        _logger.error(f'{base_url}/sms/gateway')
+        _logger.error("CHECKING THE BASE URLS")
         payload = {}
         if self.provider == 'ujumbesms':
             if obj_data:
@@ -65,7 +67,7 @@ class SmsProviderGateway(models.Model):
                                 "message": obj_data['message'],
                                 "sender": self.env.company.name,
                                 "source_id": messageToBeSent.id,
-                                "delivery_report_endpoint": "http://143.198.156.218:8069/sms/gateway"
+                                "delivery_report_endpoint": f'{base_url}/sms/gateway'
                             }
                         }
                     ]
