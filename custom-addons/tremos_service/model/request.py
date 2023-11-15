@@ -90,7 +90,7 @@ class CustomerRequest(models.Model):
     image_128 = fields.Binary(readonly=True, related="vehicle_id.image_128")
     description = fields.Char(string="Description", required=True, tracking=True)
     partner_id = fields.Many2one("res.partner", string="Customer", required=True, tracking=True)
-    warrant_provider_id = fields.Many2one("res.partner", string="Warrant Company", tracking=True)
+    warrant_provider_id = fields.Many2one("res.partner", string="Warrant Company", tracking=True,default=71)
     vehicle_id = fields.Many2one("fleet.vehicle", string="Vehicle",tracking=True)
     request_type = fields.Selection(REQUEST_TYPES, default='EXTERNAL', string="Request Type", required=True,
                                     tracking=True)
@@ -182,7 +182,7 @@ class CustomerRequest(models.Model):
     def _prepare_invoice_values(self):
         move_lines=[]
         [move_lines.append((0,0,{
-            "product_id":rec.product_id.id,
+            "product_id":rec.warrant_provider_id.id if self.has_warrant else rec.partner_id.id,
             "account_id":rec.account_id.id,
             "quantity":rec.quantity,
             "price_unit":rec.default_price,
