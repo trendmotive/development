@@ -151,8 +151,6 @@ class CustomerRequest(models.Model):
             if rec.state == "ORDER_CONFIRM" and rec.service_type=="NEED_SERVICE":
                 rec.write({"state": "SENT_TO_WORKSHOP"})
             if rec.state == "ORDER_CONFIRM" and rec.service_type=="BUY_PARTS":
-                rec.write({"state": "SERVICE_INVOICED"})
-                if rec.state =="SERVICE_INVOICED":
                     rec._prepare_invoice_values()
     def action_start_service(self):
         for rec in self:
@@ -166,7 +164,7 @@ class CustomerRequest(models.Model):
     def action_create_invoice(self):
         for rec in self:
             if rec.state == "SERVICE_DONE":
-                rec.write({"state": "SERVICE_INVOICED"})
+                rec._prepare_invoice_values()
             if rec.state == "SERVICE_INVOICED":
                 rec.write({"state": "PAID"})
     def action_mark_done(self):
@@ -188,16 +186,21 @@ class CustomerRequest(models.Model):
             "account_id":rec.account_id.id,
             "quantity":rec.quantity,
             "price_unit":rec.default_price,
-            "tax_ids":rec.tax_ids.id,
+            "tax_ids":rec.tax_ids,
         })) for rec in self.request_line_ids]
         move_object=self.env["account.move"].create({
             "partner_id":self.partner_id.id,
             "invoice_date":self.acquisition_date,
             "invoice_payment_term_id":self.payment_term_id.id,
-            # "journal_id":self.journal_id.id,
+            "move_type":"out_invoice",
             "invoice_user_id":self.env.user.id,
             "invoice_line_ids":move_lines
         })
         if move_object:
-            move_object.action_view_invoice()
+            if self.state=="ORDER_CONFIRM":
+                self.write({"state": "SERVICE_INVOICED"})
+                move_object.action_post()
+            if self.state =="SERVICE_DONE":
+                self.write({"state": "SERVICE_INVOICED"})
+                move_object.action_post()
         

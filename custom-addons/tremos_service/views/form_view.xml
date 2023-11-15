@@ -11,8 +11,8 @@
                             options="{'clickable': False}"  statusbar_visible="RFQ,QUOTATION,ORDER_CONFIRM,SERVICE_INVOICED,PAID"/>
                      <button name="action_create_quotation" string="Create Quotation" class="btn-primary" type="object" states="RFQ" />
                         <button name="action_confirm_client_quotations" string="Confirm Quotation" class="btn-primary" type="object" states="QUOTATION" />
-                        <button name="action_send_to_workshop" string="Send To Workshop" class="btn-primary" type="object"  attrs="{'invisible':[('state','not in',['ORDER_CONFIRM']),('service_type','=','BUY_PARTS')]}"/>
-                        <button name="action_send_to_workshop" string="Create an Invoice" context="{'open_invoices': True}" class="btn-primary" type="object"   attrs="{'invisible':[('state','not in',['ORDER_CONFIRM']),('service_type','=','NEED_SERVICE')]}"/>
+                        <button name="action_send_to_workshop" string="Send To Workshop" class="btn-primary" type="object"  states="ORDER_CONFIRM"/>
+                        <!-- <button name="action_send_to_workshop" string="Create an Invoice" context="{'open_invoices': True}" class="btn-primary" type="object"   attrs="{'invisible':[('state','not in',['ORDER_CONFIRM']),('service_type','=','NEED_SERVICE')]}"/> -->
                         <button name="action_start_service" string="Start Service" class="btn-primary" type="object" states="SENT_TO_WORKSHOP" />
 
                         <button name="action_service_done" string="End Service" class="btn-primary" type="object" states="SERVICE_START" />
@@ -158,7 +158,7 @@
                 <sheet>
                   <group>
                       <group>
-                          <field name="product_id" required="1"/>
+                          <field name="product_id" required="1" domain="[('active','=',True)]"/>
                           <field name="qty_available" readonly="1"/>
                           <field name="quantity" attrs="{'required':[('parent.is_true','=',True)]}"/>
                           <field name="account_id" attrs="{'required':[('parent.is_true','=',True)]}"/>
