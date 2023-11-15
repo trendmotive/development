@@ -54,7 +54,7 @@
                         </group>
                         <group>
                             <field name="employee_id" attrs="{'invisible':[('request_type','=','EXTERNAL')],'required':[('request_type','=','INTERNAL')]}"/>
-                            <field name="warrant_provider_id" attrs="{'invisible':[('has_warrant','=',False)],'required':[('has_warrant','=',True)]}" domain="[('phone','=','333333333333')]"/>
+                            <field name="warrant_provider_id" attrs="{'invisible':[('has_warrant','=',False)],'required':[('has_warrant','=',True)]}"/>
                             <!-- <field name="odometer_reading" attrs="{'invisible':[('service_type','=','BUY_PARTS')],'required':[('service_type','=','NEED_SERVICE')]}"/> -->
                             <!-- <field name="fuel_reading" attrs="{'invisible':[('service_type','=','BUY_PARTS')],'required':[('service_type','=','NEED_SERVICE')]}"/> -->
                             <field name="chassis_number" attrs="{'invisible':[('service_type','=','BUY_PARTS')],'required':[('service_type','=','NEED_SERVICE')]}"/>
