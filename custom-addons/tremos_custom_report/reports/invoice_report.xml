@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="custom_report_invoice_document" inherit_id="account.report_invoice_document">
+        <xpath expr="//t[@t-call='web.external_layout']" position="replace">
+            <t t-call="web.html_container">
+                <t t-call="web.basic_layout">
+                    <t t-foreach="docs" t-as="doc">
+                        <div class="page">
+                            <xpath expr="//div[hasclass('text-center')]" position="replace">
+                             <div class="header">
+                                <div class="row">
+                                    <div class="col-4">
+                                        <img class="img-fluid"
+                                            t-attf-src="data:image/*;base64,{{doc.company_id.logo}}"
+                                            style="max-height: 100px;" />
+                                    </div>
+                                    <div class="col-4">
+                                        <strong>PO BOX:</strong>
+                                        <span t-field="doc.company_id.street" />
+                                        <br />
+                                        <strong>E-MAIL:</strong>
+                                        <span t-field="doc.company_id.email" />
+                                        <br />
+                                        <strong>PIN NO:</strong>
+                                        <span t-field="doc.company_id.vat" />
+                                        <br />
+                                        <strong>TELL:</strong>
+                                        <span t-field="doc.company_id.phone" />
+                                    </div>
+                                    <div class="col-4"
+                                        style="align-items:center;justify-content:center;display:flex;">
+                                        <h2>
+                                            <strong>INVOICE</strong>
+                                        </h2>
+                                    </div>
+                                </div>
+                            </div>
+                            </xpath>
+                            <br />
+
+                            <div class="document_information">
+                                <div class="row">
+                                    <div class="col-4">
+                                        <strong>Invoice To:</strong>
+                                        <br />
+                                        <strong>Customer No:</strong>
+                                        <span t-field="doc.partner_id.vat" />
+                                        <br />
+                                        <strong>Customer Name:</strong>
+                                        <span t-field="doc.partner_id.name" />
+                                        <br />
+                                        <strong>Customer Address:</strong>
+                                        <span t-field="doc.partner_id.street" />
+                                        <br />
+                                        <strong>customer Mobile:</strong>
+                                        <span t-field="doc.partner_id.phone" />
+                                        <br />
+                                        <strong>customer Email:</strong>
+                                        <span t-field="doc.partner_id.email" />
+                                    </div>
+                                    <div class="col-4">
+
+                                    </div>
+                                    <div class="col-4">
+                                        <strong>Invoice No:</strong>
+                                        <span t-field="doc.name" />
+                                        <br />
+                                        <strong>Invoice Date:</strong>
+                                        <span t-field="doc.invoice_date" />
+                                        <br />
+                                        <strong>Invoice Due Date:</strong>
+                                        <span t-field="doc.invoice_date_due" />
+                                        <br />
+                                        <strong>Customer Ref:</strong>
+                                        <span t-field="doc.ref" />
+                                        <br />
+                                    </div>
+                                </div>
+                            </div>
+                            <br />
+
+                            <div class="data_table_section">
+                                <table class="table o_report_block_table table-bordered"
+                                    style="margin-top:15px;font-size:20; border: 2px solid #000000 !important;">
+                                    <thead style="background-color:white;">
+                                        <th>Product Code</th>
+                                        <th style="width:40%;">Product Description</th>
+                                        <th>Quantity</th>
+                                        <th>VAT Code</th>
+                                        <th>Unit Proce</th>
+                                        <th>Amount</th>
+                                    </thead>
+                                        <t t-foreach="doc.invoice_line_ids" t-as="line">
+                                            <td name="product_id" style="border: 2px solid #000000;">
+                                                <span t-field="line.product_id.name" />
+                                            </td>
+                                            <td
+                                                name="product_id"
+                                                style="border: 2px solid #000000;">
+                                                <span t-field="line.product_id.name" />
+                                            </td>
+                                            <td
+                                                name="quantity"
+                                                style="border: 2px solid #000000;">
+                                                <span t-field="line.quantity" />
+                                            </td>
+                                            <td
+                                                name="vat code"
+                                                style="border: 2px solid #000000;">
+                                                <span t-field="line.ref" />
+                                            </td>
+                                            <td
+                                                name="price_unit"
+                                                style="border: 2px solid #000000;">
+                                                <span t-field="line.price_unit" />
+                                            </td>
+                                            <td
+                                                name="price_subtotal"
+                                                style="border: 2px solid #000000;">
+                                                <span t-field="line.price_subtotal" />
+                                            </td>
+                                        </t>
+                                        <br/>
+                                    <!-- </tbody> -->
+                                </table>
+                            </div>
+                            <br />
+                            <div class="row">
+                                <div class="col-4">
+                                    <img t-if="doc.company_id.logo"
+                                        t-attf-src="data:image/*;base64,{{doc.company_id.logo}}"
+                                        width="105" height="105" />
+                                </div>
+                                <div class="col-4">
+                                    <p> CU INVOICE NO: <span />0110166280000000049</p>
+                                    <p> CU SERIAL NO: <span />KRAMW011202201016628</p>
+                                </div>
+                                <div class="col-4">
+                                    <table
+                                        class="table table-sm o_report_block_total table-bordered"
+                                        style="border: 2px solid #000000 !important;">
+                                        <tr class="border-black o_subtotal">
+                                            <td style="border: 2px solid #000000;">
+                                                <strong>Net Amount</strong>
+                                            </td>
+                                            <td class="text-right"
+                                                style="border: 2px solid #000000;">
+                                                <span t-field="doc.amount_untaxed"
+                                                    t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}" />
+                                            </td>
+                                        </tr>
+                                        <tr class="border-black o_subtotal">
+                                            <td style="border: 2px solid #000000;">
+                                                <strong>VAT Amount</strong>
+                                            </td>
+                                            <td class="text-right"
+                                                style="border: 2px solid #000000;">
+                                                <span t-field="doc.amount_tax"
+                                                    t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}" />
+                                            </td>
+                                        </tr>
+                                        <tr class="border-black o_subtotal">
+                                            <td style="border: 2px solid #000000;">
+                                                <strong>Total Amount</strong>
+                                            </td>
+                                            <td class="text-right"
+                                                style="border: 2px solid #000000;">
+                                                <span t-field="doc.amount_total"
+                                                    t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}" />
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="row">
+                                <div class="col-4" style="width:75%;">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <span style="color:#000000">
+                                                <strong>Prepared by:</strong>
+                                            </span>
+                                            <span>
+                                                <strong></strong>
+                                            </span>
+                                        </div>
+                                        <div class="col-6">
+                                            <span style="color:#000000">
+                                                <strong>Date:</strong>
+                                            </span>
+                                            <span>
+                                                <strong></strong>
+                                            </span>
+                                        </div>
+                                        
+                                    </div>
+                                    <br/>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <span style="color:#000000">
+                                                <strong>Delivered by:</strong>
+                                            </span>
+                                            <span>
+                                                <strong></strong>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <br/>
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <span style="color:#000000">
+                                                <strong>Received By:</strong>
+                                            </span>
+                                            <span>
+                                                <strong></strong>
+                                            </span>
+                                        </div>
+                                        <div class="col-4">
+                                            <span style="color:#000000">
+                                                <strong>Date:</strong>
+                                            </span>
+                                            <span>
+                                                <strong></strong>
+                                            </span>
+                                        </div>
+                                        <div class="col-4">
+                                            <span style="color:#000000">
+                                                <strong>Signature:</strong>
+                                            </span>
+                                            <span>
+                                                <strong></strong>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4"  style="width:25%;">
+                                    <p class="title">
+                                        <strong>MPESA TILL:</strong>3897394
+                                    </p>                                       
+                                        <br/>
+                                        <p>Goods shall remain property of PeStore Kenya Ltd Untill fully paid for</p>
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="data_table_section">
+                                <table class="table o_report_block_table table-bordered"
+                                    style="margin-top:15px;font-size:20; border: 2px solid #000000 !important;width:50%;">
+                                    <thead style="background-color:white;">
+                                        <th>Tax Code</th>
+                                        <th>Tax %</th>
+                                        <th>Total Net</th>
+                                        <th>Tax</th>
+                                        <th>Gross</th>
+                                    </thead>
+                                    <!-- <tbody class="invoice_tbody">
+                                        <t t-foreach="doc.invoice_line_ids" t-as="line">
+                                            <td name="product_id" style="border: 2px solid #000000;">
+                                                <span t-field="line.product_id.name" />
+                                            </td>
+                                            <td
+                                                name="product_id"
+                                                style="border: 2px solid #000000;">
+                                                <span t-field="line.product_id.name" />
+                                            </td>
+                                            <td
+                                                name="quantity"
+                                                style="border: 2px solid #000000;">
+                                                <span t-field="line.quantity" />
+                                            </td>
+                                            <td
+                                                name="vat code"
+                                                style="border: 2px solid #000000;">
+                                                <span t-field="line.ref" />
+                                            </td>
+                                            <td
+                                                name="price_unit"
+                                                style="border: 2px solid #000000;">
+                                                <span t-field="line.price_unit" />
+                                            </td>
+                                            <td
+                                                name="price_subtotal"
+                                                style="border: 2px solid #000000;">
+                                                <span t-field="line.price_subtotal" />
+                                            </td>
+                                        </t>
+                                    </tbody> -->
+                                </table>
+                            </div>
+
+                            <div class="footer">
+                                <hr />
+                                <center class="row ">
+                                    <tr>
+                                        <b>
+                                            <t t-esc="doc.company_id.name" />
+|                                                <t t-esc="doc.company_id.street" />
+|                                                <t t-esc="doc.company_id.street2" />
+,                                                <t t-esc="doc.company_id.city" />
+,                                                <t t-esc="doc.company_id.state_id.name" />
+,                                                <t t-esc="doc.company_id.phone" />
+|                                                <t t-esc="doc.company_id.email" />
+|                                                <t t-esc="doc.company_id.website" />
+                                        </b>
+                                    </tr>
+                                    <br />
+
+                                    <span class="page" />
+/                                        <span class="topage" />
+                                </center>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </xpath>
+    </template>
+</odoo>

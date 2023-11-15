@@ -25,7 +25,7 @@
                     <!-- <group attrs="{'invisible': [('provider', '!=', 'ujumbesms')]}"> -->
                         <field name="provider" required="1" string="Select Provider" />
                         <field name="name" attrs="{'required': [('provider', '=', 'ujumbesms')],'invisible': [('provider', '!=', 'ujumbesms')]}" string="Name"/>
-                        <field name="api_key" attrs="{'required': [('provider', '=', 'ujumbesms')],'invisible': [('provider', '!=', 'ujumbesms')]}" string="Api Key"/>
+                        <field name="api_key" attrs="{'required': [('provider', '=', 'ujumbesms')],'invisible': [('provider', '!=', 'ujumbesms')]}" string="Api Key" password="1"/>
                         <field name="email" attrs="{'required': [('provider', '=', 'ujumbesms')],'invisible': [('provider', '!=', 'ujumbesms')]}" string="Account Holder Email"/>
                         <field name="active" string="Active" />
                     <!-- </group> -->

@@ -1,0 +1,27 @@
+{
+    'name': 'Tremos Service Provider',
+    'version': '16.0.1.0.0',
+    'summary': 'Custom reports',
+    'description': """This custom module to hundle custom reportings""",
+    'category': 'Generic Modules',
+    'author': "Trend Motives Solutions",
+    'company': 'Trend Motives Solutions',
+    'maintainer': 'BroadSpace Interactive',
+    'website': "https://husseinkadweka.com",
+    'depends': ['base','account','stock','product','hr','contacts','fleet','hr_expense'],
+    'data':[
+        "security/security.xml",
+        "data/ir_sequence.xml",
+        "views/menu_actions.xml",
+        "views/menu_items.xml",
+        "views/form_view.xml",
+        "views/kanban_view.xml",
+        "views/tree_view.xml",
+        "views/extended_views.xml"
+        ],
+    'images': ['static/description/logo.jpeg'],
+    'license': 'AGPL-3',
+    'installable': True,
+    'auto_install': False,
+    'application': False,
+}

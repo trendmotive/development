@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id='fleet_vehicle_view_form_inherit' model='ir.ui.view'>
+        <field name="name">fleet.vehicle.form</field>
+        <field name="model">fleet.vehicle</field>
+        <field name="inherit_id" ref="fleet.fleet_vehicle_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="replace">
+                  <form string="Vehicle" js_class="fleet_form" class="o_fleet_form">
+                <field name="service_activity" invisible="1"/>
+                <sheet>
+                    <field name="company_id" invisible="1"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="country_code" invisible="1"/>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    <field name="image_128" widget='image' class="oe_avatar" readonly="0"/>
+                    <div class="oe_title">
+                        <label for="model_id"/>
+                        <h1>
+                            <field name="model_id" placeholder="e.g. Model S"/>
+                        </h1>
+                        <label for="license_plate" required="1"/>
+                        <h2>
+                            <field name="license_plate" class="oe_inline" placeholder="e.g. PAE 326"/>
+                        </h2>
+                        <label for="tag_ids"/>
+                        <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}"/>
+                    </div>
+                    <group col="2">
+                        <group>
+                            <field name="active" invisible="1"/>
+                            <field name="vin_sn" required="1"/>
+                            <field name="vin_number" required="1"/>
+                            <field name="location"/>
+                            <field name="manager_id" domain="[('share', '=', False)]"/>
+
+                        </group>
+                        <group>
+                            <field name="category_id"/>
+                            <field name="acquisition_date" required="1"/>
+                            <field name="write_off_date" invisible="1"/>
+                            <label for="odometer" />
+                            <div class="o_row">
+                                <field name="odometer"/>
+                                <field name="odometer_unit"/>
+                            </div>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Tax Info">
+                            <group>
+                                <group string="Fiscality">
+                                    <field name="horsepower_tax" widget="monetary"/>
+                                </group>
+                                <group string="Contract">
+                                    <field name="first_contract_date"/>
+                                    <field name="car_value" widget="monetary"/>
+                                    <field name="net_car_value" widget="monetary"/>
+                                    <field name="residual_value" widget="monetary"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Model">
+                            <group>
+                                <group string="Model">
+                                    <field name="model_year" required="1"/>
+                                    <field name="transmission"/>
+                                    <field name="color" required="1"/>
+                                    <field name="seats"/>
+                                    <field name="doors" />
+                                    <field name="trailer_hook" />
+                                    <field name="frame_type" />
+                                    <label for="frame_size"/>
+                                    <div class="o_row" attrs="{'invisible': [('vehicle_type', '!=', 'bike')]}">
+                                        <field name="frame_size" /><span>cm</span>
+                                    </div>
+                                    <field name="electric_assistance" attrs="{'invisible': [('vehicle_type', '!=', 'bike')]}"/>
+                                </group>
+                                <group string="Engine">
+                                    <field name="horsepower"/>
+                                    <label for="power"/>
+                                    <div class="o_row">
+                                        <field name="power"/><span>kW</span>
+                                    </div>
+                                    <field name="fuel_type"/>
+                                    <label for="co2"/>
+                                    <div class="o_row" name="co2">
+                                        <field name="co2"/><span>g/km</span>
+                                    </div>
+                                    <field name="co2_standard"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Note">
+                            <field name="description" nolabel="1" placeholder="Write here any other information related to this vehicle" />
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+            </xpath>
+        </field>
+    </record>
+    <!-- <record id='fleet_vehicle_view_form_inherit' model='ir.ui.view'>
+        <field name="name">fleet.vehicle.form</field>
+        <field name="model">fleet.vehicle</field>
+        <field name="inherit_id" ref="fleet.fleet_vehicle_view_form"/>
+        <field name="arch" type="xml">
+           
+        </field>
+    </record> -->
+</odoo>

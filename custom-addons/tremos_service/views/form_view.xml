@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="custom_form_request_request" model="ir.ui.view">
+        <field name="name">customer.request.view.form</field>
+        <field name="model">customer.request</field>
+        <field name="priority" eval="1" />
+        <field name="arch" type="xml">
+            <form class="o_expense_form">
+                 <header>
+                        <field name="state" widget="statusbar" readonly="1"
+                            options="{'clickable': False}"  statusbar_visible="RFQ,QUOTATION,ORDER_CONFIRM,SERVICE_INVOICED,PAID"/>
+                     <button name="action_create_quotation" string="Create Quotation" class="btn-primary" type="object" states="RFQ" />
+                        <button name="action_confirm_client_quotations" string="Confirm Quotation" class="btn-primary" type="object" states="QUOTATION" />
+                        <button name="action_send_to_workshop" string="Send To Workshop" class="btn-primary" type="object"  attrs="{'invisible':[('state','not in',['ORDER_CONFIRM']),('service_type','=','BUY_PARTS')]}"/>
+                        <button name="action_send_to_workshop" string="Create an Invoice" context="{'open_invoices': True}" class="btn-primary" type="object"   attrs="{'invisible':[('state','not in',['ORDER_CONFIRM']),('service_type','=','NEED_SERVICE')]}"/>
+                        <button name="action_start_service" string="Start Service" class="btn-primary" type="object" states="SENT_TO_WORKSHOP" />
+
+                        <button name="action_service_done" string="End Service" class="btn-primary" type="object" states="SERVICE_START" />
+
+                        <button name="action_create_invoice" string="Create Invoice" class="btn-primary" type="object" states="SERVICE_DONE" />
+                        <button name="action_mark_done" string="Mark as Paid" class="btn-primary" type="object" states="SERVICE_INVOICED" />
+                        <button name="action_reset_request" string="Cancel Request" class="btn-primary" type="object" states="QUOTATION,ORDER_CONFIRM" />
+                        <button name="action_reset_request" string="Reset Request to draft" class="btn-primary" type="object" states="CANCELLED" />
+                    </header>
+
+
+                <sheet>
+                    <div class="oe_title">
+                        <label for="sequence" />
+                        <h1>
+                            <field name="sequence" readonly="1" />
+                        </h1>
+                        <label for="description" string="Request Description"
+                                class="oe_edit_only" />
+                            <h1>
+                                <field name="description"
+                                    placeholder="e.g. Regular service check"/>
+                            </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="service_type"/>
+                            <field name="request_type"/>
+                            <field name="has_warrant" attrs="{'invisible':[('service_type','=','BUY_PARTS')]}"/>
+                            <field name="partner_id" attrs="{'invisible':[('request_type','=','INTERNAL')]}"/>
+                            <field name="is_true" invisible="1"/>
+                            <field name="vehicle_id" attrs="{'invisible':[('service_type','=','BUY_PARTS')],'required':[('service_type','=','NEED_SERVICE')]}"/>
+                            <field name="model_id" attrs="{'invisible':[('service_type','=','BUY_PARTS')],'required':[('service_type','=','NEED_SERVICE')]}"/>
+                            <field name="brand_id" attrs="{'invisible':[('service_type','=','BUY_PARTS')],'required':[('service_type','=','NEED_SERVICE')]}"/>
+                            <field name="request_date"/>
+                            <field name="company_id" />
+                            <field name="payment_term_id"/>
+                           <field name="service_start" widget="badge" attrs="{'invisible':['|',('service_type','=','BUY_PARTS'),('state','in',['RFQ','QUOTATION','SENT_TO_WORKSHOP','ORDER_CONFIRM'])]}"/>
+                        </group>
+                        <group>
+                            <field name="employee_id" attrs="{'invisible':[('request_type','=','EXTERNAL')],'required':[('request_type','=','INTERNAL')]}"/>
+                            <field name="warrant_provider_id" attrs="{'invisible':[('has_warrant','=',False)],'required':[('has_warrant','=',True)]}"/>
+                            <!-- <field name="odometer_reading" attrs="{'invisible':[('service_type','=','BUY_PARTS')],'required':[('service_type','=','NEED_SERVICE')]}"/> -->
+                            <!-- <field name="fuel_reading" attrs="{'invisible':[('service_type','=','BUY_PARTS')],'required':[('service_type','=','NEED_SERVICE')]}"/> -->
+                            <field name="chassis_number" attrs="{'invisible':[('service_type','=','BUY_PARTS')],'required':[('service_type','=','NEED_SERVICE')]}"/>
+                            <field name="model_year"  attrs="{'invisible':[('service_type','=','BUY_PARTS')],'required':[('service_type','=','NEED_SERVICE')]}"/>
+                            <field name="fuel_type"  attrs="{'invisible':[('service_type','=','BUY_PARTS')],'required':[('service_type','=','NEED_SERVICE')]}"/>
+                            <field name="acquisition_date" attrs="{'invisible':[('service_type','=','BUY_PARTS')],'required':[('service_type','=','NEED_SERVICE')]}"/>
+                            <field name="service_id" attrs="{'invisible':[('service_type','=','BUY_PARTS')],'required':[('service_type','=','NEED_SERVICE')]}"/>
+                            <field name="color" attrs="{'invisible':[('service_type','=','BUY_PARTS')],'required':[('service_type','=','NEED_SERVICE')]}"/>
+                            <field name="license_plate" attrs="{'invisible':[('service_type','=','BUY_PARTS')],'required':[('service_type','=','NEED_SERVICE')]}"/>
+                            <field name="next_date" attrs="{'invisible':[('service_type','=','BUY_PARTS')],'required':[('service_type','=','NEED_SERVICE')]}"/>
+                            <field name="mechanic_id" attrs="{'invisible':['|',('service_type','=','BUY_PARTS'),('state','in',['RFQ','QUOTATION','ORDER_CONFIRM'])],'required':[('state','=','NEED_SERVICE')]}"/>
+                            <field name="service_end" widget="badge" attrs="{'invisible':['|',('service_type','=','BUY_PARTS'),('state','in',['RFQ','QUOTATION','SENT_TO_WORKSHOP','ORDER_CONFIRM'])]}"/>
+                            <field name="duration" widget="badge" attrs="{'invisible':['|',('service_type','=','BUY_PARTS'),('state','in',['RFQ','QUOTATION','SENT_TO_WORKSHOP','ORDER_CONFIRM'])]}"/>
+                        </group>
+                    </group>
+                     <notebook>
+                    <page name="request_line_ids" string="Request Lines">
+                    <field name="request_line_ids" nolabel="1" context="{'form_view_ref' : 'tremos_service.custom_form_service_lines'}">
+                    <tree string="service Category Lines" delete="1" col="8">
+                    <field name="product_id" options="{'no_create_edit': True, 'no_create': True}" colspan="2"/>
+                    <field name="account_id"  domain="[('deprecated', '=', False), ('account_type', 'not in', ('asset_receivable', 'liability_payable')),('is_off_balance', '=', False)]" colspan="2"/>
+                    <field name="quantity" colspan="2"/>
+                    <field name="default_price" colspan="2"/>
+                    <field name="tax_ids" colspan="2"/>
+                    <field name="total_price" colspan="2"/>
+                    </tree>
+                    </field>
+                    </page>
+                    <page name="check_lst_ids" string="Check List" attrs="{'invisible':[('service_type','=','BUY_PARTS')]}">
+                        <field name="check_lst_ids" nolabel="1" context="{'form_view_ref' : 'tremos_service.custom_form_vehicle_request_checklisting'}">
+                        <tree string="Check List" delete="1" col="4">
+                        <field name="list_id"  colspan="2" string="Product/Item"/>
+                        <field name="quantity" colspan="2"/>
+                        <field name="is_checked" colspan="2" type="checkbox" />
+                        </tree>
+                        </field>
+                        </page>
+                </notebook>
+                    <field name="instructions" widget="html" placeholder="Add mechanic Instructions Here"/>
+                </sheet>
+                  <div class="oe_chatter">
+                    <field name="message_follower_ids" />
+                    <field name="activity_ids" />
+                    <field name="message_ids" />
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="custom_form_vehicle_service_category" model="ir.ui.view">
+        <field name="name">vehicle.service.category.view.form</field>
+        <field name="model">vehicle.service.category</field>
+        <field name="priority" eval="1" />
+        <field name="arch" type="xml">
+            <form class="o_expense_form">
+                <sheet>
+                  <group>
+                      <group>
+                          <field name="name"/>
+                          <field name="company_id"/>
+                          <field name="total"/>
+                          <field name="is_true" invisible="1"/>
+                      </group>
+                      <group>
+                          <field name="service_freq"/>
+                          <field name="currency_id"/>
+                      </group>
+                  </group>
+                    <notebook>
+                    <page name="category_line_ids" string="Product/Service Offered">
+                    <field name="category_line_ids" >
+                    <tree string="Product/Service Offered" delete="1">
+                    <field name="product_id" options="{'no_create_edit': True, 'no_create': True}"/>
+                    <field name="qty_available" readonly="1"/>
+                    <field name="quantity" />
+                    <field name="min_price" />
+                    <field name="default_price"/>
+                    <field name="max_price" />
+                    <field name="account_id"  domain="[('deprecated', '=', False), ('account_type', 'not in', ('asset_receivable', 'liability_payable')),('is_off_balance', '=', False)]"/>
+                    </tree>
+                    </field>
+                    </page>
+                </notebook>
+                </sheet>
+                  <div class="oe_chatter">
+                    <field name="message_follower_ids" />
+                    <field name="activity_ids" />
+                    <field name="message_ids" />
+                </div>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="custom_form_service_lines" model="ir.ui.view">
+        <field name="name">vehicle.service.category.lines.view.form</field>
+        <field name="model">vehicle.service.category.lines</field>
+        <field name="priority" eval="1" />
+        <field name="arch" type="xml">
+            <form class="o_expense_form">
+                <sheet>
+                  <group>
+                      <group>
+                          <field name="product_id" required="1"/>
+                          <field name="qty_available" readonly="1"/>
+                          <field name="quantity" attrs="{'required':[('parent.is_true','=',True)]}"/>
+                          <field name="account_id" attrs="{'required':[('parent.is_true','=',True)]}"/>
+                          <field name="total_price"/>
+                          <field name="tax_ids"/>
+                        </group>
+                      <group>
+                          <field name="default_price" attrs="{'required':[('parent.is_true','=',True)]}"/>
+                          <field name="min_price" attrs="{'invisible':[('parent.is_true','=',True)],'required':[('parent.is_true','=',False)]}"/>
+                          <field name="max_price" attrs="{'invisible':[('parent.is_true','=',True)],'required':[('parent.is_true','=',False)]}"/>
+                      </group>
+                  </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="custom_form_vehicle_check_list" model="ir.ui.view">
+        <field name="name">vehicle.request.check.list.view.form</field>
+        <field name="model">vehicle.request.check.list</field>
+        <field name="priority" eval="1" />
+        <field name="arch" type="xml">
+            <form class="o_checklist_form">
+                <sheet>
+                  <group>
+                      <group>
+                          <field name="name" required="1"/>
+                          <field name="is_required" />
+                      </group>
+                  </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="custom_form_vehicle_request_checklisting" model="ir.ui.view">
+        <field name="name">vehicle.request.checklisting.view.form</field>
+        <field name="model">vehicle.request.checklisting</field>
+        <field name="priority" eval="1" />
+        <field name="arch" type="xml">
+            <form class="o_checklist_form">
+                <sheet>
+                  <group>
+                      <group>
+                          <field name="list_id" required="1"/>
+                          <field name="quantity" />
+                          <field name="is_checked" type="checkbox" />
+                      </group>
+                  </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>
