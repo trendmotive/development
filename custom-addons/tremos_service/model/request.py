@@ -182,14 +182,14 @@ class CustomerRequest(models.Model):
     def _prepare_invoice_values(self):
         move_lines=[]
         [move_lines.append((0,0,{
-            "product_id":rec.warrant_provider_id.id if self.has_warrant else rec.partner_id.id,
+            "product_id":rec.product_id.id,
             "account_id":rec.account_id.id,
             "quantity":rec.quantity,
             "price_unit":rec.default_price,
             "tax_ids":rec.tax_ids,
         })) for rec in self.request_line_ids]
         move_object=self.env["account.move"].create({
-            "partner_id":self.partner_id.id,
+            "partner_id":self.warrant_provider_id.id if self.has_warrant else self.partner_id.id,
             "invoice_date":self.acquisition_date,
             "invoice_payment_term_id":self.payment_term_id.id,
             "move_type":"out_invoice",
