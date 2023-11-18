@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="account_move_inherit_updated" model="ir.ui.view">
+        <field name="name">account.move.view.form</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form[1]/sheet[1]/notebook[1]/page[@name='invoice_tab']/group[1]/group[1]/field[@name='narration']" position="after">
+                <field name="move_tax_ids" options="{'no_create': True}">
+                    <tree>
+                        <field name="sale_tax_code" />
+                        <field name="tax_ids" />
+                        <field name="total_net" />
+                        <field name="total_tax" />
+                        <field name="total_gross"/>
+                    </tree>
+                </field>
+            </xpath>
+        </field>
+    </record>
+    <!-- <record id="product_product_inherit_updated" model="ir.ui.view">
+        <field name="name">product.product.view.form</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='available_in_pos']" position="after">
+                <field name="sale_tax_code"/>
+              </xpath>
+        </field>
+    </record> -->
+</odoo>

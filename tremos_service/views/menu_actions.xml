@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_service_request_management_view" model="ir.actions.act_window">
+        <field name="name">Rfq and Confirmed Request Management</field>
+        <field name="res_model">customer.request</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="domain">[('state',"in",['CANCELLED','RFQ'])]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Add Service Requests
+            </p>
+        </field>
+    </record>
+ <record id="action_service_request_quotation_management_view" model="ir.actions.act_window">
+        <field name="name">Request Quotation Management</field>
+        <field name="res_model">customer.request</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="domain">[('state',"in",['QUOTATION'])]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Add Service Requests
+            </p>
+        </field>
+    </record>
+     <record id="action_service_request_confirmed_paid_management_view" model="ir.actions.act_window">
+        <field name="name">Confirmed and Paid Request Management</field>
+        <field name="res_model">customer.request</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="domain">[('state',"in",['ORDER_CONFIRM','PAID'])]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Add Service Requests
+            </p>
+        </field>
+    </record>
+    <record id="action_service_workshop_management_view" model="ir.actions.act_window">
+        <field name="name">Request in Workshop for action</field>
+        <field name="res_model">customer.request</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="domain">[('state',"in",['SENT_TO_WORKSHOP','SERVICE_START','SERVICE_DONE'])]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No Awaiting Request at the Moment ..........
+            </p>
+        </field>
+    </record>
+    <record id="action_extend_vehicle_management_view" model="ir.actions.act_window">
+        <field name="name">Vehicle Management</field>
+        <field name="res_model">fleet.vehicle</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Add Vehicle
+            </p>
+        </field>
+    </record>
+
+    <record id="action_extend_vehicle_service_category_management_view" model="ir.actions.act_window">
+        <field name="name">Service Category Management</field>
+        <field name="res_model">vehicle.service.category</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Add Vehicle Service Category
+            </p>
+        </field>
+    </record>
+
+    <record id="action_check_list_management_view" model="ir.actions.act_window">
+        <field name="name">Check List Management</field>
+        <field name="res_model">vehicle.request.check.list</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Add Check Listing
+            </p>
+        </field>
+    </record>
+</odoo>

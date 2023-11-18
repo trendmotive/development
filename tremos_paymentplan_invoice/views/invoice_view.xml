@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="account_move_payment_planss" model="ir.ui.view">
+        <field name="name">acccount.move.view.form</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form[1]/sheet[1]/notebook" position="inside">
+                <page string="Payment Schedule">
+                    <group>
+                        <group>
+                            <field name="include_schedule"/>
+                            <field name="payment_start_date" attrs="{'required': [('include_schedule','=',True)]}"/>
+                            <field name="payment_period" attrs="{'required': [('include_schedule','=',True)]}"/>
+                            <field name="see_me" invisible="1"/> 
+                        </group>
+                    </group>
+                    <div class="repayment-section" attrs="{'invisible': [('include_schedule','!=',True)]}">
+                                    <separator string="Repayment Calculations" colspan="4" />
+                                    <button name="generate_payment_schedule"
+                                        id="payment_generate_id" type="object"
+                                        string="Generate Payment Schedule" class="oe_highlight" attrs="{'invisible': [('see_me','=',True)]}"/>
+                                        <button name="clear_lines"
+                                        id="clear_lines" type="object"
+                                        string="Reset Payment Schedule" class="oe_highlight" attrs="{'invisible': [('see_me','!=',True)]}"/>
+                                </div>
+                    <field name="pay_ids" options="{'no_create': True}">
+                        <tree string="Payment Schedule">
+                            <field name="description" />
+                            <field name="payment_date" />
+                            <field name="amount_total" />
+                            <field name="amount_paid" />
+                            <field name="amount_balance" />
+                            <field name="status" />
+                        </tree>
+
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

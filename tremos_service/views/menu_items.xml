@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ROOT MENU FOR THE MODULE -->
+    <menuitem id="root_menu_car_service" name="Vehicle Services" sequence="0" />
+    <menuitem id="custom_service_request" name="Vehicle Services" parent="tremos_service.root_menu_car_service" action="tremos_service.action_service_request_management_view" sequence="1" />
+   
+    <menuitem id="custom_service_request_rfq_cancelled" name="Rfq and Cancelled Request" parent="tremos_service.custom_service_request" action="tremos_service.action_service_request_management_view" sequence="0" />
+    <menuitem id="custom_service_request_quotation" name="Request Quotations" parent="tremos_service.custom_service_request" action="tremos_service.action_service_request_quotation_management_view" sequence="1" />
+    <menuitem id="custom_service_request_confirmed_paid" name="Confirmed and Paid Quotations" parent="tremos_service.custom_service_request" action="tremos_service.action_service_request_confirmed_paid_management_view" sequence="2" />
+    <menuitem id="custom_service_workshop_views" name="Request await Services (Workshop)" parent="tremos_service.custom_service_request" action="tremos_service.action_service_workshop_management_view" sequence="4" />
+    <menuitem id="custom_extend_configs_management_view" name="Configuration" parent="tremos_service.root_menu_car_service"  sequence="100"/>
+
+    <menuitem id="custom_extend_service_category_management_view"
+        name="Service Categories"
+        parent="tremos_service.custom_extend_configs_management_view"
+        action="tremos_service.action_extend_vehicle_service_category_management_view"
+        sequence="0" />
+
+     <menuitem id="custom_extend_product_management_view"
+        name="Products and Services"
+        parent="tremos_service.custom_extend_configs_management_view"
+        action="stock.stock_product_normal_action"
+        sequence="3" />
+        <menuitem id="custom_extend_vehicle_management_view" 
+        name="Vehicle Management" 
+        parent="tremos_service.custom_extend_configs_management_view"
+        action="tremos_service.action_extend_vehicle_management_view" 
+        sequence="2" />
+
+    <menuitem id="custom_extend_customer_management_view"
+        name="Customer Management"
+        parent="tremos_service.custom_extend_configs_management_view"
+        action="contacts.action_contacts"
+        sequence="1" />
+        <menuitem id="check_list_management_view"
+        name="Check List Management"
+        parent="tremos_service.custom_extend_configs_management_view"
+        action="tremos_service.action_check_list_management_view"
+        sequence="0" />
+    <menuitem id="view_extended_invoice_custom"
+        name="Invoices"
+        parent="tremos_service.root_menu_car_service"
+        action="account.action_move_out_invoice_type"
+        sequence="1" />
+
+        <menuitem id="view_extended_expenses_custom"
+        name="Expenses"
+        parent="tremos_service.root_menu_car_service"
+        action="hr_expense.action_hr_expense_account"
+        sequence="2" />
+
+    <menuitem id="view_extended_payments_custom"
+        name="Payments"
+        parent="tremos_service.root_menu_car_service"
+        action="account.action_account_payments"
+        sequence="3" />
+
+    <menuitem 
+        id="custom_product_transfers_views_inherited" 
+        name="Product Transfers" 
+        parent="tremos_service.root_menu_car_service" 
+        action="stock.action_picking_tree_all" 
+        sequence="4" />
+
+
+</odoo>
